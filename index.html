@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线挂号系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        /* ============ 首页样式 ============ */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .clinic-info {
+            padding: 30px 20px;
+        }
+
+        .info-item {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-item:last-of-type {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .info-label span {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        .info-content {
+            color: #333;
+            font-size: 15px;
+            margin-left: 26px;
+            line-height: 1.6;
+        }
+
+        .quota-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .quota-item {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .quota-item:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        .quota-day {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .quota-number {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .quota-number.full {
+            color: #999;
+        }
+
+        .quota-status {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .quota-status.available {
+            color: #4caf50;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 30px;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ============ 患者信息页面样式 ============ */
+        .hidden {
+            display: none !important;
+        }
+
+        .patient-info-section {
+            padding: 20px;
+        }
+
+        .back-btn {
+            background: #f0f0f0;
+            color: #333;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .patient-info-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-label .required {
+            color: #f44336;
+            margin-left: 3px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #999;
+        }
+
+        .form-error {
+            color: #f44336;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        .next-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .next-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ============ 选择日期样式 ============ */
+        .date-selection {
+            padding: 20px;
+        }
+
+        .date-selection h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .date-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .date-btn {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .date-btn:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        .date-btn.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .date-btn.disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+            border-color: #e0e0e0;
+        }
+
+        .date-btn-day {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .date-btn-date {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .date-btn.selected .date-btn-date {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* ============ 支付码样式 ============ */
+        .payment-section {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .payment-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .payment-info {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+            font-size: 14px;
+        }
+
+        .qr-code-container {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .qr-code {
+            width: 250px;
+            height: 250px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            font-size: 12px;
+            color: #999;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-code img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .payment-amount {
+            font-size: 24px;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .payment-hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 15px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 6px;
+        }
+
+        .paid-btn {
+            width: 100%;
+            padding: 12px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .paid-btn:hover {
+            background: #45a049;
+        }
+
+        .cancel-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .cancel-btn:hover {
+            background: #e0e0e0;
+        }
+
+        /* ============ 凭证样式 ============ */
+        .invoice-section {
+            padding: 20px;
+        }
+
+        .invoice-container {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .invoice-header {
+            text-align: center;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .invoice-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .invoice-number {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .invoice-detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .invoice-detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .invoice-detail-label {
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .invoice-detail-value {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .invoice-service {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .service-item:last-child {
+            margin-bottom: 0;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 10px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .invoice-remark {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #2e7d32;
+            margin-bottom: 20px;
+        }
+
+        .invoice-footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .invoice-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .print-btn, .download-btn, .home-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .print-btn {
+            background: #2196f3;
+            color: white;
+        }
+
+        .print-btn:hover {
+            background: #0b7dda;
+        }
+
+        .download-btn {
+            background: #ff9800;
+            color: white;
+        }
+
+        .download-btn:hover {
+            background: #e68900;
+        }
+
+        .home-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .home-btn:hover {
+            background: #5568d3;
+        }
+
+        /* ============ 响应式 ============ */
+        @media (max-width: 600px) {
+            .header {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .clinic-info {
+                padding: 20px 15px;
+            }
+
+            .quota-list {
+                grid-template-columns: 1fr;
+            }
+
+            .date-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .invoice-detail {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .invoice-actions {
+                display: none;
+            }
+
+            .back-btn,
+            .register-btn,
+            .next-btn,
+            .paid-btn,
+            .cancel-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ============ 首页 ============ -->
+        <div id="homepage" class="homepage">
+            <div class="header">
+                <h1>🏥 在线挂号系统</h1>
+                <p>便捷、快速、安全的挂号服务</p>
+            </div>
+
+            <div class="clinic-info">
+                <div class="info-item">
+                    <div class="info-label">
+                        <span>📍</span> 诊所位置
+                    </div>
+                    <div class="info-content">
+                        北京市朝阳区建国路1号<br>
+                        医学大厦B座3楼302室
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <span>⏰</span> 营业时间
+                    </div>
+                    <div class="info-content">
+                        周一至周五：08:00 - 18:00<br>
+                        周末及法定假日：休息
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">
+                        <span>🎫</span> 每日名额（当日24:00刷新）
+                    </div>
+                    <div id="quotaDisplay" class="quota-list"></div>
+                </div>
+
+                <button class="register-btn" onclick="goToPatientInfo()">
+                    💳 我要挂号
+                </button>
+            </div>
+        </div>
+
+        <!-- ============ 患者信息页面 ============ -->
+        <div id="patientInfoSection" class="hidden">
+            <div class="header">
+                <h1>👤 填写患者信息</h1>
+                <p>请输入您的基本信息</p>
+            </div>
+
+            <div class="patient-info-section">
+                <button class="back-btn" onclick="backToHome()">← 返回首页</button>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        患者姓名 <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="patientNameInput" 
+                        class="form-input" 
+                        placeholder="请输入您的真实姓名"
+                        maxlength="20"
+                    />
+                    <div class="form-error" id="nameError">请输入患者姓名</div>
+                </div>
+
+                <button class="next-btn" onclick="goToDateSelectionFromPatient()">
+                    下一步：选择日期 →
+                </button>
+            </div>
+        </div>
+
+        <!-- ============ 选择日期 ============ -->
+        <div id="dateSelection" class="hidden">
+            <div class="date-selection">
+                <div class="header">
+                    <h1>📅 选择挂号日期</h1>
+                    <p>请选择您要挂号的日期</p>
+                </div>
+                <div style="padding: 20px;">
+                    <button class="back-btn" onclick="backToPatientInfo()">← 返回</button>
+                    <h2>请选择挂号日期</h2>
+                    <div id="dateGrid" class="date-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ 支付页面 ============ -->
+        <div id="paymentSection" class="hidden">
+            <div class="header">
+                <h1>💳 支付挂号费</h1>
+                <p>请使用微信或支付宝扫码支付</p>
+            </div>
+
+            <div class="payment-section">
+                <div class="payment-info">
+                    ⚠️ 请扫描下方二维码完成支付
+                </div>
+
+                <div class="payment-amount">¥ 8.00</div>
+                <p style="color: #666; margin-bottom: 20px; font-size: 14px;">诊疗挂号费</p>
+
+                <div class="qr-code-container">
+                    <div class="qr-code" id="qrCode">
+                        <img src="https://picui.ogmua.cn/s1/2026/06/08/6a267d7ccafcf.webp" alt="支付二维码" style="max-width: 100%; max-height: 100%;">
+                    </div>
+                </div>
+
+                <div class="payment-hint">
+                    ✓ 扫描二维码，使用微信或支付宝完成支付<br>
+                    ✓ 支付成功后请点击下方"已支付"按钮<br>
+                    ✓ 系统将自动生成电子凭证
+                </div>
+
+                <button class="paid-btn" onclick="goToInvoice()">✓ 已支付</button>
+                <button class="cancel-btn" onclick="backToHome()">✕ 取消挂号</button>
+            </div>
+        </div>
+
+        <!-- ============ 凭证页面 ============ -->
+        <div id="invoiceSection" class="hidden">
+            <div class="invoice-section">
+                <div class="invoice-container">
+                    <div class="invoice-header">
+                        <div class="invoice-title">诊疗挂号费凭证</div>
+                        <div class="invoice-number" id="invoiceNumber">凭证号：20260530-001</div>
+                    </div>
+
+                    <div class="invoice-detail">
+                        <div class="invoice-detail-item">
+                            <span class="invoice-detail-label">患者姓名</span>
+                            <span class="invoice-detail-value" id="invoicePatientName">患者</span>
+                        </div>
+                        <div class="invoice-detail-item">
+                            <span class="invoice-detail-label">挂号日期</span>
+                            <span class="invoice-detail-value" id="appointmentDate">2026-05-30</span>
+                        </div>
+                        <div class="invoice-detail-item">
+                            <span class="invoice-detail-label">凭证日期</span>
+                            <span class="invoice-detail-value" id="invoiceDate">2026-05-30</span>
+                        </div>
+                        <div class="invoice-detail-item">
+                            <span class="invoice-detail-label">支付方式</span>
+                            <span class="invoice-detail-value">微信/支付宝</span>
+                        </div>
+                    </div>
+
+                    <div class="invoice-service">
+                        <div class="service-item">
+                            <span>诊疗挂号费</span>
+                            <span>¥ 8.00</span>
+                        </div>
+                        <div class="service-item">
+                            <span>小计</span>
+                            <span>¥ 8.00</span>
+                        </div>
+                    </div>
+
+                    <div class="invoice-remark">
+                        ✓ 有任何疑问，请拨打电话：136-9768-4056
+                    </div>
+
+                    <div class="invoice-footer">
+                        电子凭证 - 具有同等法律效力<br>
+                        凭证代码：34000000 | 凭证号码：<span id="invoiceNumberFooter">20260530-001</span><br>
+                        本凭证生成于 <span id="invoiceTimeFooter">2026-05-30 10:30:00</span> UTC+08:00
+                    </div>
+
+                    <div class="invoice-actions">
+                        <button class="print-btn" onclick="printInvoice()">🖨️ 打印凭证</button>
+                        <button class="download-btn" onclick="downloadInvoice()">⬇️ 下载</button>
+                        <button class="home-btn" onclick="backToHome()">🏠 返回首页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ 配置 ============
+        const CLINIC_CONFIG = {
+            quotaPerDay: 5,
+            workDays: [1, 2, 3, 4, 5], // 1=周一, 5=周五
+            timezone: 'UTC+08:00',
+            fee: 8.00
+        };
+
+        // ============ 状态管理 ============
+        let registrationState = {
+            patientName: '',
+            selectedDate: null,
+            invoiceNumber: null,
+            appointmentTime: null
+        };
+
+        // ============ 初始化 ============
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeQuotaDisplay();
+            initializeDateSelection();
+        });
+
+        // ============ 获取当前UTC+8时间 ============
+        function getBeijingTime() {
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const cnTime = new Date(utc + (8 * 3600000));
+            return cnTime;
+        }
+
+        // ============ 获取本周工作日 ============
+        function getWorkDaysOfWeek() {
+            const now = getBeijingTime();
+            const currentDayOfWeek = now.getDay();
+            const daysToMonday = (1 - currentDayOfWeek + 7) % 7;
+            const mondayOfWeek = new Date(now);
+            mondayOfWeek.setDate(now.getDate() + daysToMonday);
+
+            const workDays = [];
+            for (let i = 0; i < 5; i++) {
+                const date = new Date(mondayOfWeek);
+                date.setDate(mondayOfWeek.getDate() + i);
+                workDays.push(date);
+            }
+            return workDays;
+        }
+
+        // ============ 显示每日名额 ============
+        function initializeQuotaDisplay() {
+            const workDays = getWorkDaysOfWeek();
+            const quotaDisplay = document.getElementById('quotaDisplay');
+            quotaDisplay.innerHTML = '';
+
+            const dayNames = ['周一', '周二', '周三', '周四', '周五'];
+
+            workDays.forEach((date, index) => {
+                const quota = getQuotaForDate(date);
+                const available = CLINIC_CONFIG.quotaPerDay - quota;
+                const isFull = available <= 0;
+
+                const quotaItem = document.createElement('div');
+                quotaItem.className = 'quota-item';
+                quotaItem.innerHTML = `
+                    <div class="quota-day">${dayNames[index]}</div>
+                    <div class="quota-number ${isFull ? 'full' : ''}">${available}</div>
+                    <div class="quota-status ${isFull ? '' : 'available'}">
+                        ${isFull ? '已满' : '可预约'}
+                    </div>
+                `;
+                quotaDisplay.appendChild(quotaItem);
+            });
+        }
+
+        // ============ 从本地存储获取该日期已预约数 ============
+        function getQuotaForDate(date) {
+            const dateStr = formatDate(date);
+            const key = `quota_${dateStr}`;
+            return parseInt(localStorage.getItem(key) || '0');
+        }
+
+        // ============ 预订名额 ============
+        function bookQuota(date) {
+            const dateStr = formatDate(date);
+            const key = `quota_${dateStr}`;
+            const currentQuota = parseInt(localStorage.getItem(key) || '0');
+            if (currentQuota < CLINIC_CONFIG.quotaPerDay) {
+                localStorage.setItem(key, currentQuota + 1);
+                return true;
+            }
+            return false;
+        }
+
+        // ============ 日期格式化 ============
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // ============ 格式化显示日期 ============
+        function formatDisplayDate(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const dayOfWeek = date.getDay();
+            const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
+            return `${year}年${month}月${day}日 周${dayNames[dayOfWeek]}`;
+        }
+
+        // ============ 初始化日期选择 ============
+        function initializeDateSelection() {
+            const workDays = getWorkDaysOfWeek();
+            const dateGrid = document.getElementById('dateGrid');
+            dateGrid.innerHTML = '';
+
+            workDays.forEach((date) => {
+                const quota = getQuotaForDate(date);
+                const available = CLINIC_CONFIG.quotaPerDay - quota;
+                const isFull = available <= 0;
+
+                const dateBtn = document.createElement('button');
+                dateBtn.className = `date-btn ${isFull ? 'disabled' : ''}`;
+                dateBtn.disabled = isFull;
+                
+                const dateStr = formatDate(date);
+                const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
+                const dayOfWeek = date.getDay();
+
+                dateBtn.innerHTML = `
+                    <span class="date-btn-day">周${dayNames[dayOfWeek]} (${date.getDate()}日)</span>
+                    <span class="date-btn-date">还剩 ${available} 个名额</span>
+                `;
+
+                if (!isFull) {
+                    dateBtn.onclick = () => selectDate(dateBtn, date);
+                }
+
+                dateGrid.appendChild(dateBtn);
+            });
+        }
+
+        // ============ 选择日期 ============
+        function selectDate(element, date) {
+            // 取消上一个选择
+            document.querySelectorAll('.date-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            // 标记当前选择
+            element.classList.add('selected');
+            registrationState.selectedDate = date;
+            registrationState.appointmentTime = formatDisplayDate(date);
+
+            // 延迟0.3秒后跳转到支付页面
+            setTimeout(() => {
+                goToPayment();
+            }, 300);
+        }
+
+        // ============ 导航函数 ============
+        function goToPatientInfo() {
+            document.getElementById('homepage').classList.add('hidden');
+            document.getElementById('patientInfoSection').classList.remove('hidden');
+            document.getElementById('dateSelection').classList.add('hidden');
+            document.getElementById('paymentSection').classList.add('hidden');
+            document.getElementById('invoiceSection').classList.add('hidden');
+            
+            // 清空输入框
+            document.getElementById('patientNameInput').value = '';
+            document.getElementById('nameError').classList.remove('show');
+        }
+
+        function goToDateSelectionFromPatient() {
+            const patientName = document.getElementById('patientNameInput').value.trim();
+            const nameError = document.getElementById('nameError');
+
+            if (!patientName) {
+                nameError.classList.add('show');
+                return;
+            }
+
+            nameError.classList.remove('show');
+            registrationState.patientName = patientName;
+
+            document.getElementById('homepage').classList.add('hidden');
+            document.getElementById('patientInfoSection').classList.add('hidden');
+            document.getElementById('dateSelection').classList.remove('hidden');
+            document.getElementById('paymentSection').classList.add('hidden');
+            document.getElementById('invoiceSection').classList.add('hidden');
+
+            // 重新初始化日期选择
+            initializeDateSelection();
+        }
+
+        function goToPayment() {
+            document.getElementById('homepage').classList.add('hidden');
+            document.getElementById('patientInfoSection').classList.add('hidden');
+            document.getElementById('dateSelection').classList.add('hidden');
+            document.getElementById('paymentSection').classList.remove('hidden');
+            document.getElementById('invoiceSection').classList.add('hidden');
+        }
+
+        function goToInvoice() {
+            // 检查名额是否充足
+            if (!bookQuota(registrationState.selectedDate)) {
+                alert('抱歉，该日期名额已满，请重新选择');
+                backToHome();
+                return;
+            }
+
+            // 生成发票信息
+            generateInvoice();
+
+            document.getElementById('homepage').classList.add('hidden');
+            document.getElementById('patientInfoSection').classList.add('hidden');
+            document.getElementById('dateSelection').classList.add('hidden');
+            document.getElementById('paymentSection').classList.add('hidden');
+            document.getElementById('invoiceSection').classList.remove('hidden');
+
+            // 刷新首页的名额显示
+            initializeQuotaDisplay();
+        }
+
+        function backToPatientInfo() {
+            document.getElementById('homepage').classList.add('hidden');
+            document.getElementById('patientInfoSection').classList.remove('hidden');
+            document.getElementById('dateSelection').classList.add('hidden');
+            document.getElementById('paymentSection').classList.add('hidden');
+            document.getElementById('invoiceSection').classList.add('hidden');
+            
+            // 清空日期选择
+            document.querySelectorAll('.date-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            registrationState.selectedDate = null;
+            registrationState.appointmentTime = null;
+        }
+
+        function backToHome() {
+            // 清除选择状态
+            registrationState.selectedDate = null;
+            registrationState.appointmentTime = null;
+            registrationState.patientName = '';
+            document.querySelectorAll('.date-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            document.getElementById('homepage').classList.remove('hidden');
+            document.getElementById('patientInfoSection').classList.add('hidden');
+            document.getElementById('dateSelection').classList.add('hidden');
+            document.getElementById('paymentSection').classList.add('hidden');
+            document.getElementById('invoiceSection').classList.add('hidden');
+
+            // 刷新首页显示
+            initializeQuotaDisplay();
+        }
+
+        // ============ 生成凭证 ============
+        function generateInvoice() {
+            const now = getBeijingTime();
+            
+            // 生成凭证号
+            const invoiceNum = formatDate(now) + '-' + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+            registrationState.invoiceNumber = invoiceNum;
+
+            // 格式化时间
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const invoiceTime = `${formatDate(now)} ${hours}:${minutes}:${seconds}`;
+
+            // 更新凭证信息
+            document.getElementById('invoiceNumber').textContent = `凭证号：${invoiceNum}`;
+            document.getElementById('invoicePatientName').textContent = registrationState.patientName;
+            document.getElementById('appointmentDate').textContent = registrationState.appointmentTime;
+            document.getElementById('invoiceDate').textContent = formatDate(now);
+            document.getElementById('invoiceNumberFooter').textContent = invoiceNum;
+            document.getElementById('invoiceTimeFooter').textContent = invoiceTime;
+        }
+
+        // ============ 打印凭证 ============
+        function printInvoice() {
+            window.print();
+        }
+
+        // ============ 下载 ============
+        function downloadInvoice() {
+            const content = document.querySelector('.invoice-container').innerText;
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+            element.setAttribute('download', `receipt_${registrationState.invoiceNumber}.txt`);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // ============ 自动刷新显示（每分钟检查一次是否需要重置） ============
+        setInterval(() => {
+            const now = getBeijingTime();
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+
+            // 每天UTC+8的00:00检查是否需要重置名额
+            if (hour === 0 && minute === 0) {
+                // 这里可以添加清除过期名额的逻辑
+                console.log('每日00:00刷新检查');
+            }
+        }, 60000); // 每分钟检查一次
+
+    </script>
+</body>
+</html>
